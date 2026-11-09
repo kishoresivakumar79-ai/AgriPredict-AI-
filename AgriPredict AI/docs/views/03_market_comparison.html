@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AgriPredict AI Dashboard</title>
+    
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0e1117;
+        color: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+    /* Streamlit Sidebar */
+    .sidebar {
+        width: 320px;
+        background-color: #171c24;
+        border-right: 1px solid rgba(255,255,255,0.08);
+        padding: 24px 20px;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        overflow-y: auto;
+    }
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .logo-text h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: #10b981;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .logo-text span {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+    .form-group {
+        margin-bottom: 16px;
+    }
+    .form-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        margin-bottom: 6px;
+        display: block;
+    }
+    .form-select, .form-input {
+        width: 100%;
+        background-color: #262730;
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #f8fafc;
+        padding: 9px 12px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        outline: none;
+    }
+    .radio-group {
+        display: flex;
+        gap: 8px;
+    }
+    .radio-pill {
+        flex: 1;
+        text-align: center;
+        padding: 7px;
+        background: #262730;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #94a3b8;
+    }
+    .radio-pill.active {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border-color: #10b981;
+        font-weight: 600;
+    }
+    /* Main Content Area */
+    .main-content {
+        flex: 1;
+        padding: 24px 36px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    /* Navigation Tabs */
+    .nav-tabs {
+        display: flex;
+        gap: 6px;
+        background-color: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 6px 8px;
+        border-radius: 12px;
+        margin-bottom: 22px;
+    }
+    .nav-tab {
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #94a3b8;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .nav-tab.active {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        font-weight: 700;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    /* Header Section */
+    .page-title {
+        font-size: 1.65rem;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+        color: #f8fafc;
+    }
+    .page-subtitle {
+        font-size: 0.88rem;
+        color: #94a3b8;
+        margin: 0 0 20px 0;
+    }
+    /* Grid Layouts */
+    .metric-grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .metric-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .metric-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 16px 18px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    }
+    .metric-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .metric-val {
+        font-size: 1.7rem;
+        font-weight: 700;
+        margin: 6px 0 2px 0;
+        color: #f8fafc;
+    }
+    .metric-footer {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+    }
+    .delta-pos { color: #10b981; font-weight: 600; }
+    .delta-neg { color: #ef4444; font-weight: 600; }
+    .delta-info { color: #38bdf8; font-weight: 600; }
+    /* AI Advisory Banner */
+    .advisory-banner {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 78, 59, 0.25));
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        border-left: 6px solid #3b82f6;
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 20px;
+    }
+    /* Tables */
+    .agri-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    .agri-table th {
+        background: rgba(255,255,255,0.06);
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-align: left;
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .agri-table td {
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        font-size: 0.86rem;
+        color: #e2e8f0;
+    }
+    .highlight-row {
+        background: rgba(16, 185, 129, 0.1);
+        font-weight: 600;
+        color: #34d399 !important;
+    }
+</style>
+
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-container">
+            <span style="font-size: 2.2rem;">🌾</span>
+            <div class="logo-text">
+                <h2>AgriPredict AI</h2>
+                <span>Agricultural Market Simulator</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">👤 User Persona / Role</label>
+            <div class="form-select">Farmer / Producer</div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 16px 0;">
+
+        <div class="form-group">
+            <label class="form-label">🌱 Select Crop</label>
+            <div class="form-select">Tomato</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">🏢 Agricultural Mandi</label>
+            <div class="form-select">Salem Mandi (Tamil Nadu)</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">⏱️ Forecast Horizon</label>
+            <div class="radio-group">
+                <div class="radio-pill">7 Days</div>
+                <div class="radio-pill active">15 Days Ahead</div>
+                <div class="radio-pill">30 Days</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">🤖 ML Algorithm</label>
+            <div class="form-select">AI Weighted Ensemble</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">📦 Harvest Quantity (Quintals)</label>
+            <div class="form-input">100.0 Quintals</div>
+        </div>
+
+        <div style="margin-top: auto; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px; font-size: 0.72rem; color: #64748b; border: 1px solid rgba(255,255,255,0.05);">
+            <b>AgriPredict Engine v2.5</b><br>
+            Source: Agmarknet & IMD Stations<br>
+            Validation: Out-of-Time Chronological Split
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="nav-tabs">
+            <div class="nav-tab">🌾 Overview</div><div class="nav-tab">🔮 Price Prediction</div><div class="nav-tab active">🚛 Market Comparison</div><div class="nav-tab">🌦️ Weather Impact</div><div class="nav-tab">⚖️ Supply & Demand</div><div class="nav-tab">💰 Profit & Storage</div><div class="nav-tab">🧪 What-If & Digital Twin</div><div class="nav-tab">🤖 AI Assistant & Reports</div>
+        </div>
+        
+    <h1 class="page-title">🚛 Market Comparison & Smart Transportation Optimization</h1>
+    <p class="page-subtitle">Calculate road distance, freight fuel rates, transit loss, and determine highest net revenue destinations.</p>
+
+    <div style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 10px; padding: 14px 18px; margin-bottom: 20px;">
+        🚀 <b>Arbitrage Recommendation</b>: Transport to <b>Coimbatore Mandi</b> (165 km away). Net gain of <b>+₹127,196 (+₹1,272/q)</b> after covering freight truck expenses and transit shrinkage.
+    </div>
+
+    <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; margin-bottom: 20px;">
+        <div style="height:100%; width:100%;">                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-4.1.1.min.js" integrity="sha256-O24V1F27f8pb0glCkelh3cVHLNiHAJ5gCaVtq2aNch8=" crossorigin="anonymous"></script>                <div id="a7e98f09-af5e-42eb-9240-d6088af75e04" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("a7e98f09-af5e-42eb-9240-d6088af75e04")) {                    Plotly.newPlot(                        "a7e98f09-af5e-42eb-9240-d6088af75e04",                        [{"hovertemplate":"\u003cb\u003e%{x}\u003c\u002fb\u003e\u003cbr\u003eQuoted: \u20b9%{y:,.0f}\u002fq\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#64748b"},"name":"Quoted Mandi Price","x":["Coimbatore","Erode","Namakkal","Pune","Dindigul","Salem","Nashik"],"y":{"dtype":"f8","bdata":"AAAAAABIrkAAAAAAABatQAAAAAAA1qVAAAAAAACOqUAAAAAAAICkQAAAAAAASqNAAAAAAACgn0A="},"type":"bar"},{"hovertemplate":"\u003cb\u003e%{x}\u003c\u002fb\u003e\u003cbr\u003eNet: \u20b9%{y:,.0f}\u002fq\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#10b981"},"name":"Net Realization (After Logistics)","x":["Coimbatore","Erode","Namakkal","Pune","Dindigul","Salem","Nashik"],"y":{"dtype":"f8","bdata":"AAAAAAA6rUAAAAAAAJqsQAAAAAAAaqVAAAAAAACEo0AAAAAAAGyjQAAAAAAASqNAAAAAAACokkA="},"type":"bar"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05}}},"font":{"family":"Inter, Roboto, sans-serif","color":"#e2e8f0"},"xaxis":{"showgrid":false,"title":{"text":"Agricultural Mandi"}},"yaxis":{"showgrid":true,"gridcolor":"rgba(255,255,255,0.08)","title":{"text":"\u20b9 per Quintal"}},"legend":{"orientation":"h","yanchor":"bottom","y":1.02,"xanchor":"right","x":1},"margin":{"l":40,"r":40,"t":60,"b":40},"barmode":"group","title":{"text":"\u003cb\u003eInter-Mandi Arbitrage: Quoted vs Net Realization for Tomato\u003c\u002fb\u003e"},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(0,0,0,0)"},                        {"responsive": true}                    )                };            </script>        </div>
+    </div>
+
+    <h3 style="font-size: 1.15rem; margin: 16px 0 10px 0;">Mandi Transport Economics Breakdown</h3>
+    <table class="agri-table">
+        <thead><tr><th>Mandi</th><th>Distance (km)</th><th>Quoted Price (₹/q)</th><th>Logistics Cost (₹/q)</th><th>Transit Loss (%)</th><th>Net Realization (₹/q)</th><th>Advantage vs Origin (₹)</th></tr></thead>
+        <tbody><tr class="highlight-row">
+            <td><b>Coimbatore</b></td>
+            <td>Tamil Nadu</td>
+            <td>₹3,876</td>
+            <td>165 km</td>
+            <td>₹122.2</td>
+            <td><b>₹3,741</b></td>
+            <td>+₹1,272</td>
+        </tr><tr>
+            <td><b>Erode</b></td>
+            <td>Tamil Nadu</td>
+            <td>₹3,723</td>
+            <td>65 km</td>
+            <td>₹57.2</td>
+            <td><b>₹3,661</b></td>
+            <td>+₹1,192</td>
+        </tr><tr>
+            <td><b>Namakkal</b></td>
+            <td>Tamil Nadu</td>
+            <td>₹2,795</td>
+            <td>55 km</td>
+            <td>₹50.7</td>
+            <td><b>₹2,741</b></td>
+            <td>+₹272</td>
+        </tr><tr>
+            <td><b>Pune</b></td>
+            <td>Maharashtra</td>
+            <td>₹3,271</td>
+            <td>1060 km</td>
+            <td>₹704.0</td>
+            <td><b>₹2,498</b></td>
+            <td>+₹29</td>
+        </tr><tr>
+            <td><b>Dindigul</b></td>
+            <td>Tamil Nadu</td>
+            <td>₹2,624</td>
+            <td>175 km</td>
+            <td>₹128.7</td>
+            <td><b>₹2,486</b></td>
+            <td>+₹17</td>
+        </tr><tr>
+            <td><b>Salem</b></td>
+            <td>Tamil Nadu</td>
+            <td>₹2,469</td>
+            <td>0 km</td>
+            <td>₹0.0</td>
+            <td><b>₹2,469</b></td>
+            <td>₹0</td>
+        </tr><tr>
+            <td><b>Nashik</b></td>
+            <td>Maharashtra</td>
+            <td>₹2,024</td>
+            <td>1180 km</td>
+            <td>₹782.0</td>
+            <td><b>₹1,194</b></td>
+            <td>₹-1,275</td>
+        </tr></tbody>
+    </table>
+    
+    </div>
+</body>
+</html>

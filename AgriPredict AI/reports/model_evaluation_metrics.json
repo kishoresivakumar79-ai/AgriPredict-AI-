@@ -1,0 +1,79 @@
+{
+  "split_date": "2026-01-26",
+  "train_samples": 12731,
+  "test_samples": 3183,
+  "target_horizon_days": 15,
+  "models": {
+    "XGBoost": {
+      "mae": 280.16,
+      "rmse": 405.51,
+      "mape": 10.3,
+      "r2_score": 0.8779,
+      "samples_evaluated": 3183
+    },
+    "RandomForest": {
+      "mae": 286.06,
+      "rmse": 418.02,
+      "mape": 10.47,
+      "r2_score": 0.8703,
+      "samples_evaluated": 3183
+    },
+    "LSTM": {
+      "mae": 307.72,
+      "rmse": 447.35,
+      "mape": 11.43,
+      "r2_score": 0.8514,
+      "samples_evaluated": 3183
+    },
+    "Prophet": {
+      "mae": 851.09,
+      "rmse": 1083.29,
+      "mape": 34.1,
+      "r2_score": 0.1288,
+      "samples_evaluated": 3183
+    }
+  },
+  "champion_model": "XGBoost",
+  "feature_importance_top10": [
+    [
+      "price_roll_mean_7",
+      0.6871884430443068
+    ],
+    [
+      "cos_doy",
+      0.06252373199848041
+    ],
+    [
+      "sin_doy",
+      0.050196229429667505
+    ],
+    [
+      "price_lag_1",
+      0.027461677627757895
+    ],
+    [
+      "arrivals_roll_mean_30",
+      0.025057944116273413
+    ],
+    [
+      "price_roll_std_30",
+      0.016605147169156165
+    ],
+    [
+      "temp_roll_mean_7",
+      0.015085766317068677
+    ],
+    [
+      "arrivals_roll_mean_7",
+      0.014166751108597947
+    ],
+    [
+      "price_lag_2",
+      0.013382688598085822
+    ],
+    [
+      "price_roll_mean_30",
+      0.012935185023911267
+    ]
+  ]
+}

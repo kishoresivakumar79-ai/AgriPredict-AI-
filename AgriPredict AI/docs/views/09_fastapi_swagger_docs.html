@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AgriPredict AI API - Swagger UI</title>
+    <style>
+        body { margin: 0; background: #fafafa; font-family: sans-serif; padding: 24px 40px; color: #3b4151; }
+        .header { border-bottom: 1px solid #ccc; padding-bottom: 16px; margin-bottom: 24px; }
+        .header h2 { margin: 0 0 6px 0; font-size: 2rem; color: #263238; }
+        .header span { background: #89bf04; color: white; padding: 4px 8px; border-radius: 12px; font-weight: bold; font-size: 0.8rem; }
+        .endpoint { background: #ebf3fb; border: 1px solid #b8d7f7; border-radius: 6px; padding: 10px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; font-family: monospace; }
+        .method-get { background: #61affe; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
+        .method-post { background: #49cc90; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; }
+        .path { font-weight: bold; font-size: 0.95rem; color: #3b4151; flex: 1; }
+        .desc { font-size: 0.85rem; color: #64748b; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>AgriPredict AI — Agricultural Market Intelligence API <span>2.5.0</span></h2>
+        <p>RESTful Prediction, Inter-Mandi Arbitrage, Weather Risk, and Economic Decision Simulator Endpoints</p>
+    </div>
+
+    <h3>Price Prediction</h3>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/prediction/forecast</span><span class="desc">Generates predicted crop price and day-by-day trajectory curve</span></div>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/prediction/models</span><span class="desc">Returns available ML architectures and champion model</span></div>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/prediction/metrics</span><span class="desc">Chronological validation metrics (MAE, RMSE, MAPE)</span></div>
+
+    <h3>Market Analysis & Transport Arbitrage</h3>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/market/compare</span><span class="desc">Compares price spreads, logistics costs, and net revenue across mandis</span></div>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/market/history</span><span class="desc">Historical daily prices, arrival volumes, and weather conditions</span></div>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/market/list</span><span class="desc">Available mandis and supported commodities</span></div>
+
+    <h3>Economic & Climate Simulation</h3>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/weather/impact</span><span class="desc">Yield damage and price hike simulation under weather shocks</span></div>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/simulation/supply-demand</span><span class="desc">Dynamic price elasticity equilibrium shifts</span></div>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/simulation/storage</span><span class="desc">Compares immediate sale vs 7, 15, and 30-day holding</span></div>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/simulation/profit</span><span class="desc">Farmer production costs, revenue, break-even, and net profit</span></div>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/simulation/what-if</span><span class="desc">Multi-parameter macro shocks and export ban simulation</span></div>
+    <div class="endpoint"><span class="method-get">GET</span><span class="path">/api/simulation/digital-twin</span><span class="desc">Multi-agent double-auction value chain simulation</span></div>
+    <div class="endpoint"><span class="method-post">POST</span><span class="path">/api/simulation/assistant/ask</span><span class="desc">Conversational AI Agricultural Advisor (Krishi Mitra)</span></div>
+</body>
+</html>

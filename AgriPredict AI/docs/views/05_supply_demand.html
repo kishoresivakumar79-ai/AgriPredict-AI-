@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AgriPredict AI Dashboard</title>
+    
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0e1117;
+        color: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+    /* Streamlit Sidebar */
+    .sidebar {
+        width: 320px;
+        background-color: #171c24;
+        border-right: 1px solid rgba(255,255,255,0.08);
+        padding: 24px 20px;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        overflow-y: auto;
+    }
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .logo-text h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: #10b981;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .logo-text span {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+    .form-group {
+        margin-bottom: 16px;
+    }
+    .form-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        margin-bottom: 6px;
+        display: block;
+    }
+    .form-select, .form-input {
+        width: 100%;
+        background-color: #262730;
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #f8fafc;
+        padding: 9px 12px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        outline: none;
+    }
+    .radio-group {
+        display: flex;
+        gap: 8px;
+    }
+    .radio-pill {
+        flex: 1;
+        text-align: center;
+        padding: 7px;
+        background: #262730;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #94a3b8;
+    }
+    .radio-pill.active {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border-color: #10b981;
+        font-weight: 600;
+    }
+    /* Main Content Area */
+    .main-content {
+        flex: 1;
+        padding: 24px 36px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    /* Navigation Tabs */
+    .nav-tabs {
+        display: flex;
+        gap: 6px;
+        background-color: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 6px 8px;
+        border-radius: 12px;
+        margin-bottom: 22px;
+    }
+    .nav-tab {
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #94a3b8;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .nav-tab.active {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        font-weight: 700;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    /* Header Section */
+    .page-title {
+        font-size: 1.65rem;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+        color: #f8fafc;
+    }
+    .page-subtitle {
+        font-size: 0.88rem;
+        color: #94a3b8;
+        margin: 0 0 20px 0;
+    }
+    /* Grid Layouts */
+    .metric-grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .metric-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .metric-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 16px 18px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    }
+    .metric-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .metric-val {
+        font-size: 1.7rem;
+        font-weight: 700;
+        margin: 6px 0 2px 0;
+        color: #f8fafc;
+    }
+    .metric-footer {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+    }
+    .delta-pos { color: #10b981; font-weight: 600; }
+    .delta-neg { color: #ef4444; font-weight: 600; }
+    .delta-info { color: #38bdf8; font-weight: 600; }
+    /* AI Advisory Banner */
+    .advisory-banner {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 78, 59, 0.25));
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        border-left: 6px solid #3b82f6;
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 20px;
+    }
+    /* Tables */
+    .agri-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    .agri-table th {
+        background: rgba(255,255,255,0.06);
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-align: left;
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .agri-table td {
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        font-size: 0.86rem;
+        color: #e2e8f0;
+    }
+    .highlight-row {
+        background: rgba(16, 185, 129, 0.1);
+        font-weight: 600;
+        color: #34d399 !important;
+    }
+</style>
+
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-container">
+            <span style="font-size: 2.2rem;">🌾</span>
+            <div class="logo-text">
+                <h2>AgriPredict AI</h2>
+                <span>Agricultural Market Simulator</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">👤 User Persona / Role</label>
+            <div class="form-select">Farmer / Producer</div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 16px 0;">
+
+        <div class="form-group">
+            <label class="form-label">🌱 Select Crop</label>
+            <div class="form-select">Tomato</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">🏢 Agricultural Mandi</label>
+            <div class="form-select">Salem Mandi (Tamil Nadu)</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">⏱️ Forecast Horizon</label>
+            <div class="radio-group">
+                <div class="radio-pill">7 Days</div>
+                <div class="radio-pill active">15 Days Ahead</div>
+                <div class="radio-pill">30 Days</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">🤖 ML Algorithm</label>
+            <div class="form-select">AI Weighted Ensemble</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">📦 Harvest Quantity (Quintals)</label>
+            <div class="form-input">100.0 Quintals</div>
+        </div>
+
+        <div style="margin-top: auto; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px; font-size: 0.72rem; color: #64748b; border: 1px solid rgba(255,255,255,0.05);">
+            <b>AgriPredict Engine v2.5</b><br>
+            Source: Agmarknet & IMD Stations<br>
+            Validation: Out-of-Time Chronological Split
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="nav-tabs">
+            <div class="nav-tab">🌾 Overview</div><div class="nav-tab">🔮 Price Prediction</div><div class="nav-tab">🚛 Market Comparison</div><div class="nav-tab">🌦️ Weather Impact</div><div class="nav-tab active">⚖️ Supply & Demand</div><div class="nav-tab">💰 Profit & Storage</div><div class="nav-tab">🧪 What-If & Digital Twin</div><div class="nav-tab">🤖 AI Assistant & Reports</div>
+        </div>
+        
+    <h1 class="page-title">⚖️ Supply and Demand Market Equilibrium Simulator</h1>
+    <p class="page-subtitle">Non-linear price response under production arrivals and consumer demand shocks: <i>P_new = P_base * ((D_new/D_base)/(S_new/S_base))^&epsilon;</i></p>
+
+    <div class="metric-grid-4">
+        <div class="metric-card"><div class="metric-header"><span>Baseline Price</span></div><div class="metric-val">₹2,469 / q</div></div>
+        <div class="metric-card"><div class="metric-header"><span>Simulated Price</span></div><div class="metric-val delta-neg">₹2,066 / q</div></div>
+        <div class="metric-card"><div class="metric-header"><span>Supply Shift</span></div><div class="metric-val delta-pos">+25.0% (Glut)</div></div>
+        <div class="metric-card"><div class="metric-header"><span>Market State</span></div><div class="metric-val delta-neg" style="font-size: 1.15rem;">Surplus / Market Glut</div></div>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; margin-bottom: 20px;">
+        <div style="height:100%; width:100%;">                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-4.1.1.min.js" integrity="sha256-O24V1F27f8pb0glCkelh3cVHLNiHAJ5gCaVtq2aNch8=" crossorigin="anonymous"></script>                <div id="ed34c622-4042-4892-85ac-ffe8ec1a93b9" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("ed34c622-4042-4892-85ac-ffe8ec1a93b9")) {                    Plotly.newPlot(                        "ed34c622-4042-4892-85ac-ffe8ec1a93b9",                        [{"line":{"color":"#3b82f6","width":3},"mode":"lines","name":"Price Elasticity Curve","x":{"dtype":"f8","bdata":"AAAAAAAASUAvp+DlFLxKQF5OwcspeExAjfWhsT40TkC8nIKXU\u002fBPQPahsT401lBAjfWhsT60UUAkSZIkSZJSQLycgpdTcFNAVPByCl5OVEDrQ2N9aCxVQIKXU\u002fByClZAGutDY33oVkCyPjTWh8ZXQEmSJEmSpFhA4OUUvJyCWUB4OQUvp2BaQBCN9aGxPltAp+DlFLwcXEA+NNaHxvpcQNaHxvrQ2F1Abtu2bdu2XkAFL6fg5ZRfQE7Byyl4OWBAGutDY32oYEDmFLycghdhQLI+NNaHhmFAfWisD431YUBJkiRJkmRiQBW8nIKX02JA4OUUvJxCY0CsD431obFjQHg5BS+nIGRARGN9aKyPZEAQjfWhsf5kQNu2bdu2bWVAp+DlFLzcZUBzCl5OwUtmQD401ofGumZACl5OwcspZ0DWh8b60JhnQKKxPjTWB2hAbtu2bdt2aEA5BS+n4OVoQAUvp+DlVGlA0VgfGuvDaUCcgpdT8DJqQGisD431oWpANNaHxvoQa0AAAAAAAIBrQA=="},"y":[4218.70094741277,4038.6931329585186,3876.983593627438,3730.758036063415,3597.7656906350444,3476.1830243617032,3364.5155256339435,3261.5256319922623,3166.178978576742,3077.6037216036193,2995.0593477944863,2917.9124691505313,2845.6178318963493,2777.7032660871287,2713.7576475230144,2653.4211866083283,2596.377532247402,2542.347304274198,2491.0827596580198,2442.3633655886692,2395.9921032554457,2351.792364393538,2309.60533179551,2269.287757342709,2230.7100684097777,2193.7547469794727,2158.314936389695,2124.293238998629,2091.600674704644,2060.1557755776134,2029.8837961378229,2000.7160222797777,1972.5891646517143,1945.4448245998376,1919.2290226723665,1893.891781233117,1869.3867540212889,1845.6708965637795,1822.7041722388317,1800.449289537304,1778.8714666961032,1757.9382204081512,1737.6191757616352,1717.8858949418475,1698.711722552991,1680.0716456940386,1661.9421671597306,1644.3011903412962,1627.1279145767055,1610.4027398515152],"type":"scatter"},{"marker":{"color":"#94a3b8","size":12},"mode":"markers+text","name":"Baseline","text":["Baseline (120 T)"],"textposition":"top right","x":[120.0],"y":[2469.0],"type":"scatter"},{"marker":{"color":"#ef4444","size":14},"mode":"markers+text","name":"Simulated","text":["Simulated: \u20b92,066"],"textposition":"top right","x":[150.0],"y":[2066.0],"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05}}},"font":{"family":"Inter, sans-serif","color":"#e2e8f0"},"xaxis":{"title":{"text":"Market Arrivals Supply (Tonnes)"},"showgrid":true,"gridcolor":"rgba(255,255,255,0.08)"},"yaxis":{"title":{"text":"Price (\u20b9 per Quintal)"},"showgrid":true,"gridcolor":"rgba(255,255,255,0.08)"},"title":{"text":"\u003cb\u003eMarket Price Elasticity Reaction Curve for Tomato (\u03b5 = 0.65)\u003c\u002fb\u003e"},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(0,0,0,0)"},                        {"responsive": true}                    )                };            </script>        </div>
+    </div>
+    
+    </div>
+</body>
+</html>

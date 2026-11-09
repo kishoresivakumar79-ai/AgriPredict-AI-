@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AgriPredict AI Dashboard</title>
+    
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #0e1117;
+        color: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+    /* Streamlit Sidebar */
+    .sidebar {
+        width: 320px;
+        background-color: #171c24;
+        border-right: 1px solid rgba(255,255,255,0.08);
+        padding: 24px 20px;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        overflow-y: auto;
+    }
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .logo-text h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: #10b981;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .logo-text span {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+    .form-group {
+        margin-bottom: 16px;
+    }
+    .form-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        margin-bottom: 6px;
+        display: block;
+    }
+    .form-select, .form-input {
+        width: 100%;
+        background-color: #262730;
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #f8fafc;
+        padding: 9px 12px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        outline: none;
+    }
+    .radio-group {
+        display: flex;
+        gap: 8px;
+    }
+    .radio-pill {
+        flex: 1;
+        text-align: center;
+        padding: 7px;
+        background: #262730;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #94a3b8;
+    }
+    .radio-pill.active {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border-color: #10b981;
+        font-weight: 600;
+    }
+    /* Main Content Area */
+    .main-content {
+        flex: 1;
+        padding: 24px 36px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    /* Navigation Tabs */
+    .nav-tabs {
+        display: flex;
+        gap: 6px;
+        background-color: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 6px 8px;
+        border-radius: 12px;
+        margin-bottom: 22px;
+    }
+    .nav-tab {
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #94a3b8;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .nav-tab.active {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        font-weight: 700;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    /* Header Section */
+    .page-title {
+        font-size: 1.65rem;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+        color: #f8fafc;
+    }
+    .page-subtitle {
+        font-size: 0.88rem;
+        color: #94a3b8;
+        margin: 0 0 20px 0;
+    }
+    /* Grid Layouts */
+    .metric-grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .metric-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .metric-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 16px 18px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    }
+    .metric-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .metric-val {
+        font-size: 1.7rem;
+        font-weight: 700;
+        margin: 6px 0 2px 0;
+        color: #f8fafc;
+    }
+    .metric-footer {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+    }
+    .delta-pos { color: #10b981; font-weight: 600; }
+    .delta-neg { color: #ef4444; font-weight: 600; }
+    .delta-info { color: #38bdf8; font-weight: 600; }
+    /* AI Advisory Banner */
+    .advisory-banner {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 78, 59, 0.25));
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        border-left: 6px solid #3b82f6;
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 20px;
+    }
+    /* Tables */
+    .agri-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    .agri-table th {
+        background: rgba(255,255,255,0.06);
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-align: left;
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .agri-table td {
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        font-size: 0.86rem;
+        color: #e2e8f0;
+    }
+    .highlight-row {
+        background: rgba(16, 185, 129, 0.1);
+        font-weight: 600;
+        color: #34d399 !important;
+    }
+</style>
+
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-container">
+            <span style="font-size: 2.2rem;">🌾</span>
+            <div class="logo-text">
+                <h2>AgriPredict AI</h2>
+                <span>Agricultural Market Simulator</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">👤 User Persona / Role</label>
+            <div class="form-select">Farmer / Producer</div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 16px 0;">
+
+        <div class="form-group">
+            <label class="form-label">🌱 Select Crop</label>
+            <div class="form-select">Tomato</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">🏢 Agricultural Mandi</label>
+            <div class="form-select">Salem Mandi (Tamil Nadu)</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">⏱️ Forecast Horizon</label>
+            <div class="radio-group">
+                <div class="radio-pill">7 Days</div>
+                <div class="radio-pill active">15 Days Ahead</div>
+                <div class="radio-pill">30 Days</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">🤖 ML Algorithm</label>
+            <div class="form-select">AI Weighted Ensemble</div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">📦 Harvest Quantity (Quintals)</label>
+            <div class="form-input">100.0 Quintals</div>
+        </div>
+
+        <div style="margin-top: auto; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px; font-size: 0.72rem; color: #64748b; border: 1px solid rgba(255,255,255,0.05);">
+            <b>AgriPredict Engine v2.5</b><br>
+            Source: Agmarknet & IMD Stations<br>
+            Validation: Out-of-Time Chronological Split
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="nav-tabs">
+            <div class="nav-tab">🌾 Overview</div><div class="nav-tab">🔮 Price Prediction</div><div class="nav-tab">🚛 Market Comparison</div><div class="nav-tab">🌦️ Weather Impact</div><div class="nav-tab">⚖️ Supply & Demand</div><div class="nav-tab">💰 Profit & Storage</div><div class="nav-tab">🧪 What-If & Digital Twin</div><div class="nav-tab active">🤖 AI Assistant & Reports</div>
+        </div>
+        
+    <h1 class="page-title">🤖 Krishi Mitra (AI Farmer Assistant) & Advisory Reports</h1>
+    <p class="page-subtitle">Conversational agricultural Q&A and instant downloadable standardized market intelligence reports.</p>
+
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+        <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px;">
+            <div style="background: #2563eb; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">👨‍🌾</div>
+            <div style="background: rgba(255,255,255,0.06); padding: 10px 16px; border-radius: 12px; font-size: 0.92rem;">
+                <b>Farmer Query</b>: Should I sell my tomatoes now in Salem or store them?
+            </div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="background: #059669; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">🌾</div>
+            <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); padding: 14px 18px; border-radius: 12px; font-size: 0.92rem; color: #f8fafc; flex: 1;">
+                🌾 **Storage Recommendation for Tomato (Salem Mandi)**:<br><br>• **Recommended Action**: **Immediate Sale**<br>• **Current Market Rate**: ₹2,469 per quintal<br>• **Net Financial Impact**: Projected gain of **+₹0** over immediate selling (factoring storage charges & spoilage).<br>• **Storage Suitability**: Cold Storage Only (High Perishability).<br><br>💡 *Expert Tip*: Ensure proper sorting and moisture grading prior to loading into storage.
+            </div>
+        </div>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px;">
+        <h3 style="margin-top: 0;">📄 Standardized Market Advisory Report Preview</h3>
+        <p style="color: #94a3b8; font-size: 0.85rem;">Generated for Tomato (Salem Mandi) | 100 Quintals</p>
+        <pre style="background: #111827; padding: 14px; border-radius: 8px; color: #34d399; font-size: 0.8rem; overflow-x: auto;">
+# AgriPredict AI — Agricultural Market Intelligence Report
+- Crop: Tomato | Mandi: Salem | Quantity: 100 Quintals
+- Spot Rate: ₹2,469/q | Predicted Rate: ₹1,978/q (-19.9%)
+- Recommended Action: Transport to Coimbatore Mandi (+₹120/q net profit)
+- Storage Evaluation: Immediate Sale Recommended (High Perishability)
+        </pre>
+        <button style="background: #10b981; color: #000; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer;">📥 Download Advisory Report (Markdown)</button>
+    </div>
+    
+    </div>
+</body>
+</html>

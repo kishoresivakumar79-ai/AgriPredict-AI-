@@ -1,0 +1,204 @@
+# AgriPredict AI Configuration Settings
+app:
+  name: "AgriPredict AI - Agricultural Market & Price Prediction Simulator"
+  version: "2.5.0"
+  tagline: "Empowering Farmers with Predictive Intelligence & Market Economics"
+  author: "DeepMind Agri-Intelligence Team"
+  theme: "agri-emerald"
+
+database:
+  url: "sqlite:///./agricultural_market.db"
+  echo: false
+
+ml:
+  target_column: "modal_price"
+  horizon_days: [7, 15, 30]
+  default_horizon: 15
+  test_size_ratio: 0.20
+  random_state: 42
+  sequence_length: 30 # For LSTM / Sequential Models
+  confidence_interval_z: 1.645 # 90% confidence interval
+  models_to_train:
+    - "xgboost"
+    - "lstm"
+    - "prophet"
+    - "random_forest"
+
+crops:
+  Tomato:
+    category: "Vegetable (Perishable)"
+    shelf_life_days: 7
+    cold_storage_shelf_life_days: 30
+    spoilage_rate_ambient_pct_day: 4.5
+    spoilage_rate_cold_pct_day: 0.8
+    cold_storage_cost_per_q_day: 4.0
+    ambient_storage_cost_per_q_day: 1.0
+    price_elasticity: 0.65
+    cultivation_cost_per_acre: 65000
+    avg_yield_quintals_per_acre: 110
+    seasons: ["Kharif", "Rabi", "Summer"]
+  Onion:
+    category: "Bulb (Semi-Perishable)"
+    shelf_life_days: 30
+    cold_storage_shelf_life_days: 120
+    spoilage_rate_ambient_pct_day: 1.5
+    spoilage_rate_cold_pct_day: 0.3
+    cold_storage_cost_per_q_day: 3.5
+    ambient_storage_cost_per_q_day: 0.8
+    price_elasticity: 0.55
+    cultivation_cost_per_acre: 55000
+    avg_yield_quintals_per_acre: 90
+    seasons: ["Kharif", "Late Kharif", "Rabi"]
+  Potato:
+    category: "Tuber (Storable)"
+    shelf_life_days: 45
+    cold_storage_shelf_life_days: 210
+    spoilage_rate_ambient_pct_day: 0.9
+    spoilage_rate_cold_pct_day: 0.15
+    cold_storage_cost_per_q_day: 3.0
+    ambient_storage_cost_per_q_day: 0.6
+    price_elasticity: 0.45
+    cultivation_cost_per_acre: 60000
+    avg_yield_quintals_per_acre: 120
+    seasons: ["Rabi"]
+  Rice:
+    category: "Cereal Grain (Durable)"
+    shelf_life_days: 365
+    cold_storage_shelf_life_days: 730
+    spoilage_rate_ambient_pct_day: 0.05
+    spoilage_rate_cold_pct_day: 0.01
+    cold_storage_cost_per_q_day: 1.8
+    ambient_storage_cost_per_q_day: 0.4
+    price_elasticity: 0.35
+    cultivation_cost_per_acre: 42000
+    avg_yield_quintals_per_acre: 45
+    seasons: ["Kharif", "Rabi"]
+  Maize:
+    category: "Cereal Grain (Durable)"
+    shelf_life_days: 180
+    cold_storage_shelf_life_days: 365
+    spoilage_rate_ambient_pct_day: 0.1
+    spoilage_rate_cold_pct_day: 0.02
+    cold_storage_cost_per_q_day: 1.9
+    ambient_storage_cost_per_q_day: 0.45
+    price_elasticity: 0.40
+    cultivation_cost_per_acre: 38000
+    avg_yield_quintals_per_acre: 50
+    seasons: ["Kharif", "Rabi"]
+
+markets:
+  Salem:
+    state: "Tamil Nadu"
+    district: "Salem"
+    market_type: "Regulated Mandi"
+    base_freight_per_km_tonne: 6.5
+    latitude: 11.6643
+    longitude: 78.1460
+  Erode:
+    state: "Tamil Nadu"
+    district: "Erode"
+    market_type: "Major Agricultural Hub"
+    base_freight_per_km_tonne: 6.2
+    latitude: 11.3410
+    longitude: 77.7172
+  Coimbatore:
+    state: "Tamil Nadu"
+    district: "Coimbatore"
+    market_type: "High Demand Terminal Market"
+    base_freight_per_km_tonne: 6.8
+    latitude: 11.0168
+    longitude: 76.9558
+  Namakkal:
+    state: "Tamil Nadu"
+    district: "Namakkal"
+    market_type: "District Marketing Committee"
+    base_freight_per_km_tonne: 6.0
+    latitude: 11.2189
+    longitude: 78.1674
+  Dindigul:
+    state: "Tamil Nadu"
+    district: "Dindigul"
+    market_type: "Wholesale Vegetable Mandi"
+    base_freight_per_km_tonne: 6.3
+    latitude: 10.3673
+    longitude: 77.9803
+  Nashik:
+    state: "Maharashtra"
+    district: "Nashik"
+    market_type: "National Onion Capital"
+    base_freight_per_km_tonne: 5.8
+    latitude: 19.9975
+    longitude: 73.7898
+  Pune:
+    state: "Maharashtra"
+    district: "Pune"
+    market_type: "Major Terminal Market"
+    base_freight_per_km_tonne: 6.4
+    latitude: 18.5204
+    longitude: 73.8567
+
+inter_market_distances_km:
+  Salem:
+    Salem: 0
+    Erode: 65
+    Coimbatore: 165
+    Namakkal: 55
+    Dindigul: 175
+    Nashik: 1180
+    Pune: 1060
+  Erode:
+    Salem: 65
+    Erode: 0
+    Coimbatore: 100
+    Namakkal: 60
+    Dindigul: 135
+    Nashik: 1195
+    Pune: 1075
+  Coimbatore:
+    Salem: 165
+    Erode: 100
+    Coimbatore: 0
+    Namakkal: 155
+    Dindigul: 160
+    Nashik: 1260
+    Pune: 1140
+  Namakkal:
+    Salem: 55
+    Erode: 60
+    Coimbatore: 155
+    Namakkal: 0
+    Dindigul: 120
+    Nashik: 1210
+    Pune: 1090
+  Dindigul:
+    Salem: 175
+    Erode: 135
+    Coimbatore: 160
+    Namakkal: 120
+    Dindigul: 0
+    Nashik: 1320
+    Pune: 1200
+  Nashik:
+    Salem: 1180
+    Erode: 1195
+    Coimbatore: 1260
+    Namakkal: 1210
+    Dindigul: 1320
+    Nashik: 0
+    Pune: 210
+  Pune:
+    Salem: 1060
+    Erode: 1075
+    Coimbatore: 1140
+    Namakkal: 1090
+    Dindigul: 1200
+    Nashik: 210
+    Pune: 0
+
+paths:
+  raw_data_dir: "datasets/raw"
+  processed_data_dir: "datasets/processed"
+  sample_data_dir: "datasets/sample"
+  trained_models_dir: "trained_models"
+  reports_dir: "reports"
+
